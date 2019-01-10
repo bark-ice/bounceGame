@@ -6,7 +6,8 @@ cc.Class({
     },
 
     onBeginContact: function (contact, selfCollider, otherCollider) {
-        if (this.isstageBox(otherCollider.node.name)) {
+        cc.audioManager.playGameEffectType(otherCollider.node.name);
+        if (this.isGetScoreNode(otherCollider.node)) {
             // cc.audioEngine.playEffect(selfCollider.node.game.rockAudio, false);
             var box = otherCollider.getComponent(cc.Sprite);
             var scoreLabel = otherCollider.node.getChildByName("scoreLabel");
@@ -20,32 +21,36 @@ cc.Class({
             }
             var colorArr = this.hslToRgb(labelValue * 0.025, 0.5, 0.5);
             otherCollider.node.getChildByName("boxBgView").setColor(cc.color(colorArr[0], colorArr[1], colorArr[2]));
-        }else if (this.isLifeBall(otherCollider.node.name)) {
+        }else if (this.isLifeBall(otherCollider.node)) {
             otherCollider.node.destroy();
             selfCollider.node.game.addBolls ++;
         }
-        selfCollider.node.game.playLineAni(otherCollider.node);
+        selfCollider.node.game.playLineAni(otherCollider.node,selfCollider);
     },
 
-    isstageBox(nodeName){
-        if (nodeName == window.GameStage.stage_box1 || nodeName == window.GameStage.stage_box2 || nodeName == window.GameStage.stage_box3 || nodeName == window.GameStage.stage_box4 ||
-            nodeName == window.GameStage.stage_box5 || nodeName == window.GameStage.stage_box6 ) {
+    //是否是得分的Node
+    isGetScoreNode(node){
+        if (node.name == window.GameStageType.stage_1_box || node.name == window.GameStageType.stage_2_double_box || node.name == window.GameStageType.stage_3_box_left_down ||
+            node.name == window.GameStageType.stage_4_box_right_down || node.name == window.GameStageType.stage_5_box_right_up || node.name == window.GameStageType.stage_6_box_left_up||
+            node.name == window.GameStageType.stage_11_box_type1){
             return true;
+        }
+        if (node.name == window.GameStageType.stage_12_box_type2 || node.name == window.GameStageType.stage_13_box_type3||
+            node.name == window.GameStageType.stage_16_box_type4 || node.name == window.GameStageType.stage_17_box_type5) {
+            if (node.getChildByName("imgclose").active == false) {
+                return true;
+            }
         }
         return false;
     },
 
-    isLifeBall(nodeName){
-        if (nodeName == window.GameStage.stage_lifeBall1 || nodeName == window.GameStage.stage_lifeBall2 || nodeName == window.GameStage.stage_lifeBall3 ) {
+    //加球
+    isLifeBall(node){
+        if (node.name == window.GameStageType.stage_21_ball_add1 ) {
             return true;
         }
         return false;
     },
-
-    playLineAni(node){
-        
-    },
-
 
     hslToRgb: function (h, s, l) {
         var r, g, b;

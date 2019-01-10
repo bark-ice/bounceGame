@@ -1,5 +1,7 @@
 (function () {
 
+    'use strict';
+
     function boot () {
 
         var settings = window._CCSettings;
@@ -52,13 +54,16 @@
             canvas = document.getElementById('GameCanvas');
         }
 
-        if (false) {
-            var ORIENTATIONS = {
-                'portrait': 1,
-                'landscape left': 2,
-                'landscape right': 3
-            };
-            BK.Director.screenMode = ORIENTATIONS[settings.orientation];
+        if (cc.sys.platform === cc.sys.QQ_PLAY) {
+            if (settings.orientation === 'landscape left') {
+                BK.Director.screenMode = 2;
+            }
+            else if (settings.orientation === 'landscape right') {
+                BK.Director.screenMode = 3;
+            }
+            else if (settings.orientation === 'portrait') {
+                BK.Director.screenMode = 1;
+            }
             initAdapter();
         }
 
@@ -106,7 +111,7 @@
                         cc.sys.BROWSER_TYPE_MIUI,
                     ].indexOf(cc.sys.browserType) < 0);
                 }
-
+                
                 // Limit downloading max concurrent task to 2,
                 // more tasks simultaneously may cause performance draw back on some android system / brwosers.
                 // You can adjust the number based on your own test result, you have to set it before any loading process to take effect.
@@ -123,10 +128,6 @@
                 packedAssets: settings.packedAssets,
                 md5AssetsMap: settings.md5AssetsMap
             });
-
-            if (false) {
-                cc.Pipeline.Downloader.PackDownloader._doPreload("WECHAT_SUBDOMAIN", settings.WECHAT_SUBDOMAIN_DATA);
-            }
 
             var launchScene = settings.launchScene;
 
@@ -149,28 +150,20 @@
 
         // jsList
         var jsList = settings.jsList;
-
-        if (false) {
-            BK.Script.loadlib();
+        var bundledScript = settings.debug ? 'src/project.dev.js' : 'src/project.js';
+        if (jsList) {
+            jsList = jsList.map(function (x) { return 'src/' + x; });
+            jsList.push(bundledScript);
         }
-        else
-        {
-            var bundledScript = settings.debug ? 'src/project.dev.js' : 'src/project.js';
-            if (jsList) {
-                jsList = jsList.map(function (x) {
-                    return 'src/' + x;
-                });
-                jsList.push(bundledScript);
-            }
-            else {
-                jsList = [bundledScript];
-            }
+        else {
+            jsList = [bundledScript];
         }
 
         // anysdk scripts
         if (cc.sys.isNative && cc.sys.isMobile) {
             jsList = jsList.concat(['src/anysdk/jsb_anysdk.js', 'src/anysdk/jsb_anysdk_constants.js']);
         }
+
 
         var option = {
             //width: width,
@@ -190,15 +183,18 @@
     }
 
     if (false) {
-        BK.Script.loadlib('GameRes://libs/qqplay-adapter.js');
-        BK.Script.loadlib('GameRes://src/settings.js');
-        BK.Script.loadlib();
-        BK.Script.loadlib('GameRes://libs/qqplay-downloader.js');
-        qqPlayDownloader.REMOTE_SERVER_ROOT = "";
-        var prevPipe = cc.loader.md5Pipe || cc.loader.assetLoader;
-        cc.loader.insertPipeAfter(prevPipe, qqPlayDownloader);
-        // <plugin script code>
-        boot();
+        (function () {
+            var require = function (url) {
+                BK.Script.loadlib('GameRes://' + url);
+            };
+            require('libs/qqplay-adapter.js');
+            require('src/settings.js');
+            require(window._CCSettings.debug ? 'cocos2d-js.js' : 'cocos2d-js-min.js');
+            require('libs/qqplay-downloader.js');
+            var prevPipe = cc.loader.md5Pipe || cc.loader.assetLoader;
+            cc.loader.insertPipeAfter(prevPipe, qqPlayDownloader);
+            boot();
+        })();
         return;
     }
 

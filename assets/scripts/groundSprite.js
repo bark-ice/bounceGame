@@ -32,7 +32,7 @@ cc.Class({
                 this.game.isActivity = false;
                 this.game.allBollsLabel.enabled = true;
                 this.game.allBollsLabel.getComponent(cc.Label).string = "x " + this.game.allBolls;
-                this.game.allBollsLabel.node.setPosition(cc.v2(this.game.firstBollPositionX - 30, -315));
+                this.game.allBollsLabel.node.x = this.game.firstBollPositionX + 40;
             }
         }
     },

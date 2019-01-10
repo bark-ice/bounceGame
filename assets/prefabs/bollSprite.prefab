@@ -63,7 +63,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": -348
+      "y": -304
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -173,7 +173,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "ee3cf716-765e-4098-b27c-846b16129994"
+      "__id__": 0
     },
     "fileId": "d3Sm6A489DeaJRshDbfYUS",
     "sync": false
